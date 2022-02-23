@@ -39,10 +39,15 @@ class ORCA105 : ORCACheck
     GetResults($Config)
     {
         $Check = "ATP"
-        
+        $CountOfPolicies = ($Config["SafeLinksPolicy"] | Where-Object {$_.IsEnabled -eq $True}).Count
         ForEach($Policy in ($Config["SafeLinksPolicy"] | Where-Object {$_.IsEnabled -eq $True})) 
         {
-
+            $IsPolicyEnabled = $true
+            $IsBuiltIn = $false
+            if($($Policy.Name) -ilike "Built-In" -and $CountOfPolicies -gt 1)
+            {
+                $IsBuiltIn =$True
+            }
             <#
             
             DeliverMessageAfterScan
@@ -57,7 +62,7 @@ class ORCA105 : ORCACheck
 
                 # Determine if DeliverMessageAfterScan is on for this safelinks policy
                 If($Policy.DeliverMessageAfterScan -eq $true) 
-                {
+                {                 
                     $ConfigObject.SetResult([ORCAConfigLevel]::Standard,"Pass")
                 }
                 Else 
@@ -81,13 +86,15 @@ class ORCA105 : ORCACheck
                 $ConfigObject.ConfigData=$($Policy.ScanUrls)
 
                 If($Policy.ScanUrls -eq $true)
-                {
-                    $ConfigObject.SetResult([ORCAConfigLevel]::Standard,"Pass")
+                {                 
+                    $ConfigObject.SetResult([ORCAConfigLevel]::Standard,"Pass")                
                 }
                 Else 
-                {
+                {                 
                     $ConfigObject.SetResult([ORCAConfigLevel]::Standard,"Fail")
                 }
+
+                
 
                 # Add config to check
                 $this.AddConfig($ConfigObject)
