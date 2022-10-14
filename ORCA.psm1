@@ -58,7 +58,7 @@ function Get-ORCADirectory
     {
         $Directory = "$($env:LOCALAPPDATA)\Microsoft\ORCA"
     }
-    elseif($IsLinux -or $IsMac)
+    elseif($IsLinux -or $IsMacOS)
     {
         $Directory = "$($env:HOME)/ORCA"
     }
